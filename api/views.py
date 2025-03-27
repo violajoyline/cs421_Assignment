@@ -5,7 +5,24 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from .models import Student, Subject
 from .serializers import StudentSerializer, SubjectSerializer
+from django.http import HttpResponse
+from django.urls import reverse
 
+def api_index(request):
+    html_content = f"""
+    <html>
+        <body>
+            <h1>API Endpoints</h1>
+            <ul>
+                <li><a href="{reverse('students-list')}">Students</a></li>
+                <li><a href="{reverse('subjects-list')}">Subjects</a></li>
+            </ul>
+        </body>
+    </html>
+    """
+    return HttpResponse(html_content)
+
+    
 @api_view(['GET'])
 def students_list(request):
     students = Student.objects.all()[:10]  # Get at least 10 students
