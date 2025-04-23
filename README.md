@@ -96,3 +96,42 @@ How it's executed: backs up all changes made since the last full backup
 1. Potential for failed recovery if any of the backup sets are incomplete
 2. Backup takes longer and requires more storage space than incremental backup
 3. Slow and complex to restore compared to full backups
+
+##  Bash Scripts
+
+This project includes three Bash scripts located in the `bash_scripts/` directory for automating server maintenance tasks on the AWS EC2 Ubuntu instance.
+
+### 1. Server health check script, `health_check.sh`
+**Purpose:** Monitors server resource usage and API status.  
+**Checks include:**
+- CPU, memory, and disk space
+- Web server, Nginx status
+- API endpoints `/students` and `/subjects` return 200 OK
+- Logs output to `/var/log/server_health.log`
+
+### 2. Backup script, `backup_api.sh`
+**Purpose:** Backs up the API project and PostgreSQL database.  
+**Actions:**
+- Archives the API directory (`/home/ubuntu/cs421_Assignment`)
+- Dumps the `students_db` PostgreSQL database
+- Saves both to `/home/ubuntu/backups`
+- Deletes backups older than 7 days
+- Logs output to `/var/log/backup.log`
+
+### 3. Update script,  `update_server.sh`
+**Purpose:** Automates server and API updates.  
+**Actions:**
+- Updates and upgrades Ubuntu packages
+- Pulls the latest code from the GitHub repo
+- Restarts the web server (e.g., Nginx)
+- Logs output to `/var/log/update.log`
+
+---
+
+###  Setup Instructions
+
+1. **Make scripts executable:**
+
+   ```
+   chmod +x bash_scripts/*.sh
+   ```
