@@ -133,5 +133,7 @@ This project includes three Bash scripts located in the `bash_scripts/` director
 1. **Make scripts executable:**
 
    ```
-   chmod +x bash_scripts/*.sh
+   chmod +x health_check.sh
+   chmod +x backup_api.sh
+   chmod +x update_server.sh
    ```
