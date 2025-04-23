@@ -1,3 +1,4 @@
+
 """
 Django settings for studentsapi project.
 
@@ -25,7 +26,10 @@ SECRET_KEY = 'django-insecure-#kn3@7f730@-vue^1cf$9w^#v-wfsy9o@=i(c3s&)m-f#emtyn
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+
+
+ALLOWED_HOSTS = ['*', 'localhost']
+
 
 
 # Application definition
