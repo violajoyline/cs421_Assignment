@@ -1,42 +1,36 @@
 #!/bin/bash
 
-# === CONFIG ===
 BACKUP_DIR="/home/ubuntu/backups"
-API_DIR="/home/ubuntu/cs421_Assignment"  
-DB_NAME="students_db"       
-DB_USER="postgres"
+API_SOURCE="/home/ubuntu/cs421_Assignment"
+DB_BACKUP="$BACKUP_DIR/db_backup_$(date +%F).sql"
+API_BACKUP="$BACKUP_DIR/api_backup_$(date +%F).tar.gz"
 LOG_FILE="/var/log/backup.log"
-DATE=$(date +%F)
-TIME=$(date +"%Y-%m-%d %H:%M:%S")
 
-# === Ensure backup folder exists ===
 mkdir -p "$BACKUP_DIR"
 
-# === Start log entry ===
-echo "[$TIME] Backup started" >> "$LOG_FILE"
+{
+    echo "[ $(date '+%Y-%m-%d %H:%M:%S') ] Backup started"
+    
+    # Backup API files
+    tar czvf "$API_BACKUP" "$API_SOURCE"
+    if [ $? -eq 0 ]; then
+        echo "[ $(date '+%Y-%m-%d %H:%M:%S') ] API backup successful: $API_BACKUP"
+    else
+        echo "[ $(date '+%Y-%m-%d %H:%M:%S') ] API backup FAILED"
+    fi
 
-# === Backup API project ===
-API_BACKUP="$BACKUP_DIR/api_backup_$DATE.tar.gz"
-tar -czf "$API_BACKUP" "$API_DIR" 2>> "$LOG_FILE"
-if [ $? -eq 0 ]; then
-  echo "[$TIME] API backup successful: $API_BACKUP" >> "$LOG_FILE"
-else
-  echo "[$TIME] API backup FAILED" >> "$LOG_FILE"
-fi
+    # Backup Database
+    PGPASSWORD=12345 pg_dump -U postgres -h 127.0.0.1 -d students_db > "$DB_BACKUP"
+    if [ $? -eq 0 ]; then
+        echo "[ $(date '+%Y-%m-%d %H:%M:%S') ] DB backup successful: $DB_BACKUP"
+    else
+        echo "[ $(date '+%Y-%m-%d %H:%M:%S') ] DB backup FAILED"
+    fi
 
-# === Backup PostgreSQL DB ===
-DB_BACKUP="$BACKUP_DIR/db_backup_$DATE.sql"
-PGPASSWORD="12345" pg_dump -U "$DB_USER" -F p "$DB_NAME" > "$DB_BACKUP" 2>> "$LOG_FILE"
-if [ $? -eq 0 ]; then
-  echo "[$TIME] DB backup successful: $DB_BACKUP" >> "$LOG_FILE"
-else
-  echo "[$TIME] DB backup FAILED" >> "$LOG_FILE"
-fi
+    # Delete backups older than 7 days
+    find "$BACKUP_DIR" -type f -mtime +7 -exec rm {} \;
+    echo "[ $(date '+%Y-%m-%d %H:%M:%S') ] Old backups deleted if any (older than 7 days)"
+    echo "[ $(date '+%Y-%m-%d %H:%M:%S') ] Backup completed"
+    echo "--------------------------------------"
 
-# === Delete old backups (> 7 days) ===
-find "$BACKUP_DIR" -type f -mtime +7 -name "*.tar.gz" -delete
-find "$BACKUP_DIR" -type f -mtime +7 -name "*.sql" -delete
-
-echo "[$TIME] Old backups deleted if any (older than 7 days)" >> "$LOG_FILE"
-echo "[$TIME] Backup completed" >> "$LOG_FILE"
-echo "--------------------------------------" >> "$LOG_FILE"
+} >> "$LOG_FILE" 2>&1
