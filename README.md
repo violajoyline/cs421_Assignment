@@ -137,3 +137,27 @@ This project includes three Bash scripts located in the `bash_scripts/` director
    chmod +x backup_api.sh
    chmod +x update_server.sh
    ```
+## Deployment in docker
+To build the image:
+```
+docker-compose build
+```
+Run the containers:
+```
+docker-compose up
+```
+The API can then be accessed via http://aws_IP:8000
+
+To set up the database:
+```
+docker-compose exec web python manage.py makemigrarions
+docker-compose exec web python manage.py migrate
+```
+Django superuser to access the admin panel:
+```
+docker-compose exec web python manage.py createsuperuser
+````
+
+## Tips for troubleshooting common errors
+1. Not seeing models in django admin: ensure models are registered in admin.py and run migrations again
+2. To access the terminal without terminating or bringing the containers down: run docker-compose up -d for containers to run detached in the background
