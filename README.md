@@ -157,7 +157,21 @@ Django superuser to access the admin panel:
 ```
 docker-compose exec web python manage.py createsuperuser
 ````
+### To access the image on dockerhub:
+```
+https://hub.docker.com/r/violajoyline/students_api
+
+```
+How to pull the image:
+```
+docker pull violajoyline/students_api:latest
+```
+How to run the image:
+```
+docker run -p 8000:8000 violajoyline/students_api
+```
 
 ## Tips for troubleshooting common errors
 1. Not seeing models in django admin: ensure models are registered in admin.py and run migrations again
 2. To access the terminal without terminating or bringing the containers down: run docker-compose up -d for containers to run detached in the background
+3. "denied: access to the requested resource denied" while pushing to docker hub : make sure you locked in to docker as a root user and pushed as a root user
